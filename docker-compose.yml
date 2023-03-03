@@ -8,6 +8,8 @@ services:
     environment:
       ZOO_MY_ID: 1
       ZOO_PORT: 2181
+    networks:
+      - broker-kafka
   kafka1:
     image: confluentinc/cp-kafka:5.3.0
     hostname: kafka1
@@ -22,6 +24,8 @@ services:
       KAFKA_NUM_PARTITIONS: 3
     depends_on:
       - zookeeper
+    networks:
+      - broker-kafka
   kafka2:
     image: confluentinc/cp-kafka:5.3.0
     hostname: kafka2
@@ -36,6 +40,8 @@ services:
       KAFKA_NUM_PARTITIONS: 3
     depends_on:
       - zookeeper
+    networks:
+      - broker-kafka
   kafka3:
     image: confluentinc/cp-kafka:5.3.0
     hostname: kafka3
@@ -50,6 +56,8 @@ services:
       KAFKA_NUM_PARTITIONS: 3
     depends_on:
       - zookeeper
+    networks:
+      - broker-kafka
   kafdrop:
     image: obsidiandynamics/kafdrop
     restart: "no"
@@ -61,6 +69,32 @@ services:
       - kafka1
       - kafka2
       - kafka3
+    networks:
+      - broker-kafka
+  producer:
+    build:
+      context: .
+      dockerfile: producer/Dockerfile
+    environment:
+      - KAFKA_TOPIC_NAME=user-tracker
+      - KAFKA_SERVER=kafka
+      - KAFKA_PORT=19091
+    depends_on:
+      - kafdrop
+    networks:
+      - broker-kafka
+  consumer:
+    build:
+      context: .
+      dockerfile: consumer/Dockerfile
+    environment:
+      - KAFKA_TOPIC_NAME=user-tracker
+      - KAFKA_SERVER=kafka
+      - KAFKA_PORT=19091
+    depends_on:
+      - producer
+    networks:
+      - broker-kafka
   cassandra:
     container_name: cassandra
     image: cassandra
@@ -69,7 +103,30 @@ services:
     ports:
       - 9042:9042
     environment:
-      - CASSANDRA_START_RPC=true
-      - CASSANDRA_CLUSTER_NAME=MyCluster
-      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
-      - CASSANDRA_DC=datacenter
+      CASSANDRA_START_RPC: true
+      CASSANDRA_CLUSTER_NAME: MyCluster
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+      CASSANDRA_DC: datacenter
+    networks:
+      - broker-kafka
+networks:
+  broker-kafka:
+    driver: bridge
+  # grafana:
+  #   image: grafana/grafana
+  #   ports:
+  #     - 3000:3000
+  #   environment:
+  #     - GF_INSTALL_PLUGINS=hadesarchitect-cassandra-datasource
+  # influxdb:
+  #   image: influxdb
+  #   container_name: influxdb
+  #   restart: always
+  #   environment:
+  #     - INFLUXDB_DB=influx
+  #     - INFLUXDB_ADMIN_USER=admin
+  #     - INFLUXDB_ADMIN_PASSWORD=admin
+  #   ports:
+  #     - '8086:8086'
+  #   volumes:
+  #     - influxdb_data:/var/lib/influxdb

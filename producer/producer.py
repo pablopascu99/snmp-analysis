@@ -14,7 +14,7 @@ logging.basicConfig(format='%(asctime)s %(message)s',
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-p = Producer({'bootstrap.servers':'localhost:9091'})
+p = Producer({'bootstrap.servers':'kafka1:19091'})
 
 print('Kafka Producer has been initiated...')
 

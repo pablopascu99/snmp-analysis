@@ -2,9 +2,9 @@ FROM python
 
 WORKDIR /producer
 
-COPY requirements.txt requirements.txt
+COPY ./producer/requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "./producer.py"]
+CMD [ "python", "./producer/producer.py"]

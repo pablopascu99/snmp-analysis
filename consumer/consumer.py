@@ -3,13 +3,13 @@ from cassandra.cluster import Cluster
 import json
 import sys
 
-c = Consumer({'bootstrap.servers':'localhost:9091','group.id':'counting-group','auto.offset.reset':'earliest'})
+c = Consumer({'bootstrap.servers':'kafka1:19091','group.id':'counting-group','auto.offset.reset':'earliest'})
 print('Kafka Consumer has been initiated...')
 
 #print('Available topics to consume: ', c.list_topics().topics)
 c.subscribe(['user-tracker'])
 
-cluster = Cluster(contact_points=['127.0.0.1'], port=9042)
+cluster = Cluster(contact_points=['cassandra'], port=9042)
 session = cluster.connect()
 session.execute("""
     CREATE KEYSPACE IF NOT EXISTS snmp_traps
