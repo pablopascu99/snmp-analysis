@@ -1,5 +1,11 @@
 version: '3'
 services:
+  # snmpTrapAgent:
+  #     build:
+  #       context: .
+  #       dockerfile: snmpTrapAgent/Dockerfile
+  #     networks:
+  #       - broker-kafka
   zookeeper:
     image: zookeeper
     hostname: zookeeper
@@ -95,38 +101,27 @@ services:
       - producer
     networks:
       - broker-kafka
-  cassandra:
-    container_name: cassandra
-    image: cassandra
-    volumes:
-      - ./data:/var/lib/cassandra
-    ports:
-      - 9042:9042
+  postgres:
+    image: postgres
+    restart: always
     environment:
-      CASSANDRA_START_RPC: true
-      CASSANDRA_CLUSTER_NAME: MyCluster
-      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
-      CASSANDRA_DC: datacenter
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    # volumes: 
+      # - ./postgres-data:/var/lib/postgresql/data
+      # copy the sql script to create tables
+      # - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    networks:
+      - broker-kafka
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
     networks:
       - broker-kafka
 networks:
   broker-kafka:
     driver: bridge
-  # grafana:
-  #   image: grafana/grafana
-  #   ports:
-  #     - 3000:3000
-  #   environment:
-  #     - GF_INSTALL_PLUGINS=hadesarchitect-cassandra-datasource
-  # influxdb:
-  #   image: influxdb
-  #   container_name: influxdb
-  #   restart: always
-  #   environment:
-  #     - INFLUXDB_DB=influx
-  #     - INFLUXDB_ADMIN_USER=admin
-  #     - INFLUXDB_ADMIN_PASSWORD=admin
-  #   ports:
-  #     - '8086:8086'
-  #   volumes:
-  #     - influxdb_data:/var/lib/influxdb
