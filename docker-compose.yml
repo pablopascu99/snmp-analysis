@@ -1,11 +1,12 @@
 version: '3'
 services:
-  # snmpTrapAgent:
-  #     build:
-  #       context: .
-  #       dockerfile: snmpTrapAgent/Dockerfile
-  #     networks:
-  #       - broker-kafka
+  agent:
+    network_mode: "host"
+    build:
+      context: .
+      dockerfile: /agent/Dockerfile
+    depends_on:
+      - producer
   zookeeper:
     image: zookeeper
     hostname: zookeeper
@@ -82,9 +83,11 @@ services:
       context: .
       dockerfile: producer/Dockerfile
     environment:
-      - KAFKA_TOPIC_NAME=user-tracker
+      - KAFKA_TOPIC_NAME=snmptrap-tracker
       - KAFKA_SERVER=kafka
       - KAFKA_PORT=19091
+    ports:
+      - "162:162/udp"
     depends_on:
       - kafdrop
     networks:
@@ -94,7 +97,7 @@ services:
       context: .
       dockerfile: consumer/Dockerfile
     environment:
-      - KAFKA_TOPIC_NAME=user-tracker
+      - KAFKA_TOPIC_NAME=snmptrap-tracker
       - KAFKA_SERVER=kafka
       - KAFKA_PORT=19091
     depends_on:
@@ -112,16 +115,14 @@ services:
       - '5432:5432'
     # volumes: 
       # - ./postgres-data:/var/lib/postgresql/data
-      # copy the sql script to create tables
-      # - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
     networks:
       - broker-kafka
-  grafana:
-    image: grafana/grafana
-    ports:
-      - 3000:3000
-    networks:
-      - broker-kafka
+  # grafana:
+  #   image: grafana/grafana
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - broker-kafka
 networks:
   broker-kafka:
     driver: bridge

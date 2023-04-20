@@ -6,7 +6,7 @@ c = Consumer({'bootstrap.servers':'kafka1:19091','group.id':'counting-group','au
 print('Kafka Consumer has been initiated...')
 
 #print('Available topics to consume: ', c.list_topics().topics)
-c.subscribe(['user-tracker'])
+c.subscribe(['snmptrap-tracker'])
 
 #establishing the connection
 conn = psycopg2.connect(database="postgres", user='postgres', password='postgres', host='postgres', port= '5432')
@@ -14,11 +14,14 @@ conn = psycopg2.connect(database="postgres", user='postgres', password='postgres
 #Creating a cursor object using the cursor() method
 cursor = conn.cursor()
 
-sql= '''CREATE TABLE IF NOT EXISTS users (
-    user_id INTEGER PRIMARY KEY,
-    user_name VARCHAR (255),
-    user_address VARCHAR (255),
-    platform VARCHAR (255)
+sql= '''CREATE TABLE IF NOT EXISTS snmpTraps (
+    ID SERIAL PRIMARY KEY,
+    IPSource VARCHAR (255),
+    Version VARCHAR (255),
+    MIB VARCHAR (255),
+    Type VARCHAR (255),
+    AdditionalInfo JSON,
+    Datetime VARCHAR (255)
 )'''
 
 cursor.execute(sql)
@@ -37,11 +40,16 @@ def main():
 
         #Creating a cursor object using the cursor() method
         cursor = conn.cursor()
-        data=json.loads(msg.value().decode('utf-8'))
-        cursor.execute(""" INSERT INTO users (user_id, user_name, user_address, platform) VALUES (%s,%s,%s,%s)""",
-            (data['user_id'],
-             data['user_name'],
-             data['user_address'],
-             data['platform']))
+        data = json.loads(msg.value().decode('utf-8'))
+        print(data)
+        additionalInfoJson=json.dumps(data['AdditionalInfo'])
+        print(type(additionalInfoJson))
+        cursor.execute(""" INSERT INTO snmpTraps (IPSource, Version, MIB, Type, AdditionalInfo, Datetime) VALUES (%s,%s,%s,%s,%s,%s)""",
+            (data['IPSource'],
+             data['Version'],
+             data['MIB'],
+             data['Type'],
+             additionalInfoJson,
+             data['Datetime']))
 
 main()
