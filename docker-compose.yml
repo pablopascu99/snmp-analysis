@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: /agent/Dockerfile
     depends_on:
-      - producer
+      - consumer
   zookeeper:
     image: zookeeper
     hostname: zookeeper
@@ -113,16 +113,18 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - '5432:5432'
-    # volumes: 
-      # - ./postgres-data:/var/lib/postgresql/data
+    volumes: 
+      - ./postgres-data:/var/lib/postgresql/data
     networks:
       - broker-kafka
-  # grafana:
-  #   image: grafana/grafana
-  #   ports:
-  #     - 3000:3000
-  #   networks:
-  #     - broker-kafka
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana-storage:/var/lib/grafana
+    networks:
+      - broker-kafka
 networks:
   broker-kafka:
     driver: bridge

@@ -7,6 +7,8 @@ import json
 from datetime import datetime, timedelta
 from confluent_kafka import Producer
 import logging
+import random
+import re
 
 logging.basicConfig(format='%(asctime)s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S',
@@ -21,7 +23,7 @@ print('Kafka Producer has been initiated...')
 
 def cbFun(transportDispatcher, transportDomain, transportAddress, wholeMsg):
     print('cbFun is called')
-    global hour
+    global minute
     while wholeMsg:
         print('loop...')
         # print(wholeMsg)
@@ -48,38 +50,36 @@ def cbFun(transportDispatcher, transportDomain, transportAddress, wholeMsg):
                 print('Agent Address: %s' % (agentAdress))
                 genericTrap = pMod.apiTrapPDU.getGenericTrap(reqPDU).prettyPrint()
                 print('Generic Trap: %s' % (genericTrap))
-                specificTrap = pMod.apiTrapPDU.getSpeciicTrap(reqPDU).prettyPrint()
+                specificTrap = pMod.apiTrapPDU.getSpecificTrap(reqPDU).prettyPrint()
                 print('Specific Trap: %s' % (specificTrap))
                 uptime = pMod.apiTrapPDU.getTimeStamp(reqPDU).prettyPrint()
                 print('Uptime: %s' % (uptime))
-                varBinds = pMod.apiTrapPDU.getVarBinds(reqPDU)
-                varBindsList = []
-                for oid, val in varBinds:
-                    # oid = oid.prettyPrint()
-                    print('OID: %s' % (oid))
-                    # value = val.prettyPrint()
-                    print('Value: %s' % (val))
-                    varBindsTuple = (oid,val)
-                    varBindsList.append(varBindsTuple)
-                # Assemble MIB browser
-                mibBuilder = builder.MibBuilder()
 
-                # SI NO FUNCIONA DESCOMENTAR. AQUI SE VE LA RUTA QUE COGE LOS MIBs
-                # pysmi_debug.setLogger(pysmi_debug.Debug('compiler'))
+                if genericTrap == "coldStart" or genericTrap == "warmStart":
+                    trapInfo.append("SNMPv2-MIB")
+                else:
+                    trapInfo.append("IF-MIB")
 
-                compiler.addMibCompiler(mibBuilder)
-                mibViewController = view.MibViewController(mibBuilder)
+                trapInfo.append(genericTrap)
 
-                # Pre-load MIB modules we expect to work with
-                mibBuilder.loadModules('IF-MIB')
-                print("TRADUCCION.............")
-                # ent = rfc1902.ObjectType(rfc1902.ObjectIdentity(enterprise)).resolveWithMib(mibViewController)
-                # print(ent)
-                resolvedVarBinds = []
-                for x in varBinds:
-                    resolvedVarBind = rfc1902.ObjectType(rfc1902.ObjectIdentity(x[0]), x[1]).resolveWithMib(mibViewController)
-                    resolvedVarBinds.append(resolvedVarBind)
-                    print(resolvedVarBind)
+                trapInfo.append([])
+                
+                dateTime = datetime.now()+ timedelta(minutes=minute)
+                dateTimeStr = dateTime.strftime('%Y-%m-%d %H:%M:%S')
+                trapInfo.append(dateTimeStr)
+                minute = minute+random.randint(5, 45)
+                jsonTrap = {}
+                nombresClaves = ["IPSource", "Version", "MIB", "Type", "AdditionalInfo", "Datetime"]
+                for i in range(len(trapInfo)):
+                    jsonTrap[nombresClaves[i]] = trapInfo[i]
+
+                jsonStr = json.dumps(jsonTrap, indent=5)
+                jsonTrap = json.loads(jsonStr)
+                m=json.dumps(jsonTrap)
+                p.poll(1)
+                # Producimos en el topic snmptrap-tracker
+                p.produce('snmptrap-tracker', m.encode('utf-8'),callback=receipt)
+                p.flush()
             else:
                 trapInfo.append("2")
                 mibBuilder = builder.MibBuilder()
@@ -101,31 +101,40 @@ def cbFun(transportDispatcher, transportDomain, transportAddress, wholeMsg):
                 for oid, val in varBinds:
                     resolvedVarBind = rfc1902.ObjectType(rfc1902.ObjectIdentity(oid), val).resolveWithMib(mibViewController)
                     if cont==0:
-                        if resolvedVarBind.prettyPrint() == "SNMPv2-MIB::snmpTrapOID.0 = SNMPv2-MIB::coldStart":
+                        coldStart = r"SNMPv2-MIB::coldStart"
+                        warmStart = r"SNMPv2-MIB::warmStart"
+                        linkDown = r"IF-MIB::linkDown"
+                        linkUp = r"IF-MIB::linkUp"
+                        authenticationFailure = r"SNMPv2-MIB::authenticationFailure"
+                        if re.search(coldStart, resolvedVarBind.prettyPrint()):
                             trapInfo.append("SNMPv2-MIB")
                             trapInfo.append("coldStart")
                             print(resolvedVarBind)
-                        elif resolvedVarBind.prettyPrint() == "SNMPv2-MIB::snmpTrapOID.0 = SNMPv2-MIB::warmStart":
+                        elif re.search(warmStart, resolvedVarBind.prettyPrint()):
                             trapInfo.append("SNMPv2-MIB")
                             trapInfo.append("warmStart")
                             print(resolvedVarBind)
-                        elif resolvedVarBind.prettyPrint() == "SNMPv2-MIB::snmpTrapOID.0 = IF-MIB::linkDown":
+                        elif re.search(linkDown, resolvedVarBind.prettyPrint()):
                             trapInfo.append("IF-MIB")
                             trapInfo.append("linkDown")
                             print(resolvedVarBind)
-                        elif resolvedVarBind.prettyPrint() == "SNMPv2-MIB::snmpTrapOID.0 = IF-MIB::linkUp":
+                        elif re.search(linkUp, resolvedVarBind.prettyPrint()):
                             trapInfo.append("IF-MIB")
                             trapInfo.append("linkUp")
+                            print(resolvedVarBind)
+                        elif re.search(authenticationFailure, resolvedVarBind.prettyPrint()):
+                            trapInfo.append("IF-MIB")
+                            trapInfo.append("authenticationFailure")
                             print(resolvedVarBind)
                     else:
                         resolvedVarBinds.append(resolvedVarBind.prettyPrint())
                         print(resolvedVarBind)
                     cont = cont+1
                 trapInfo.append(resolvedVarBinds)
-                dateTime = datetime.now()+ timedelta(hours=hour)
+                dateTime = datetime.now()+ timedelta(minutes=minute)
                 dateTimeStr = dateTime.strftime('%Y-%m-%d %H:%M:%S')
                 trapInfo.append(dateTimeStr)
-                hour = hour+1
+                minute = minute+random.randint(5, 45)
                 jsonTrap = {}
                 nombresClaves = ["IPSource", "Version", "MIB", "Type", "AdditionalInfo", "Datetime"]
                 for i in range(len(trapInfo)):
@@ -140,7 +149,7 @@ def cbFun(transportDispatcher, transportDomain, transportAddress, wholeMsg):
                 p.flush()
     return wholeMsg
 
-hour = 0
+minute = 0
 
 def receipt(err,msg):
     if err is not None:

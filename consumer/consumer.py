@@ -2,15 +2,9 @@ from confluent_kafka import Consumer
 import json
 import psycopg2
 
-c = Consumer({'bootstrap.servers':'kafka1:19091','group.id':'counting-group','auto.offset.reset':'earliest'})
-print('Kafka Consumer has been initiated...')
-
-#print('Available topics to consume: ', c.list_topics().topics)
-c.subscribe(['snmptrap-tracker'])
-
 #establishing the connection
 conn = psycopg2.connect(database="postgres", user='postgres', password='postgres', host='postgres', port= '5432')
-
+print('DB connected...')
 #Creating a cursor object using the cursor() method
 cursor = conn.cursor()
 
@@ -21,13 +15,20 @@ sql= '''CREATE TABLE IF NOT EXISTS snmpTraps (
     MIB VARCHAR (255),
     Type VARCHAR (255),
     AdditionalInfo JSON,
-    Datetime VARCHAR (255)
+    Datetime TIMESTAMP
 )'''
 
 cursor.execute(sql)
+print('Table created...')
 conn.commit()
 def main():
 
+    c = Consumer({'bootstrap.servers':'kafka1:19091','group.id':'counting-group','auto.offset.reset':'earliest'})
+    print('Kafka Consumer has been initiated...')
+
+    #print('Available topics to consume: ', c.list_topics().topics)
+    c.subscribe(['snmptrap-tracker'])
+    print('Subscribed...')
     while True:
         msg=c.poll(1.0) #timeout
         if msg is None:
