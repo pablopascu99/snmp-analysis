@@ -222,8 +222,117 @@ def pipeline5():
     subprocess.call(["snmptrap", '-v', '1', '-c', 'public', '127.0.0.1', "coldStart", '0', '0', 'sysUpTime.0', "0"])
     subprocess.call(["snmptrap", '-v', '1', '-c', 'public', '127.0.0.1', "coldStart", '0', '0', 'sysUpTime.0', "0"])
 
+# Reinicio en caliente de varias interfaces de un dispositivo
+def pipeline6():
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::warmStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"G0/0/1"',"ifType.1","i","117"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkUp", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"G0/0/1"',"IF-MIB::ifType.2","i","117"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::warmStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"S0/0/1"',"ifType.1","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkUp", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"S0/0/1"',"IF-MIB::ifType.2","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::warmStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"Fa0/0/2"',"ifType.1","i","62"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkUp", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"Fa0/0/2"',"IF-MIB::ifType.2","i","62"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::warmStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"FC-PH"',"ifType.1","i","56"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkUp", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"FC-PH"',"IF-MIB::ifType.2","i","56"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::warmStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"S0/0/2"',"ifType.1","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkUp", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"S0/0/2"',"IF-MIB::ifType.2","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::warmStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"Fa0/0/1"',"ifType.1","i","62"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkUp", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"Fa0/0/1"',"IF-MIB::ifType.2","i","62"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::warmStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"G0/0/1"',"ifType.1","i","117"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkUp", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"G0/0/1"',"IF-MIB::ifType.2","i","117"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::warmStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"S0/0/1"',"ifType.1","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkUp", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"S0/0/1"',"IF-MIB::ifType.2","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::warmStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"G0/0/1"',"ifType.1","i","117"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkUp", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"G0/0/1"',"IF-MIB::ifType.2","i","117"])
+
+# Simula varios fallos de autenticaion en diferentes servidores
+def pipeline7():
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1", "''", "SNMPv2-MIB::authenticationFailure", 
+                        "SNMPv2-MIB::sysLocation.0", "s", "'Authentication Failure on Server 1'"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1", "''", "SNMPv2-MIB::authenticationFailure", 
+                        "SNMPv2-MIB::sysLocation.0", "s", "'Authentication Failure on Server 2'"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1", "''", "SNMPv2-MIB::authenticationFailure", 
+                        "SNMPv2-MIB::sysLocation.0", "s", "'Authentication Failure on Server 1'"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1", "''", "SNMPv2-MIB::authenticationFailure", 
+                        "SNMPv2-MIB::sysLocation.0", "s", "'Authentication Failure on Server 3'"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1", "''", "SNMPv2-MIB::authenticationFailure", 
+                        "SNMPv2-MIB::sysLocation.0", "s", "'Authentication Failure on Server 2'"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1", "''", "SNMPv2-MIB::authenticationFailure", 
+                        "SNMPv2-MIB::sysLocation.0", "s", "'Authentication Failure on Server 2'"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1", "''", "SNMPv2-MIB::authenticationFailure", 
+                        "SNMPv2-MIB::sysLocation.0", "s", "'Authentication Failure on Server 2'"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1", "''", "SNMPv2-MIB::authenticationFailure", 
+                        "SNMPv2-MIB::sysLocation.0", "s", "'Authentication Failure on Server 1'"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1", "''", "SNMPv2-MIB::authenticationFailure", 
+                        "SNMPv2-MIB::sysLocation.0", "s", "'Authentication Failure on Server 3'"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1", "''", "SNMPv2-MIB::authenticationFailure", 
+                        "SNMPv2-MIB::sysLocation.0", "s", "'Authentication Failure on Server 2'"])
+    
+# Simula el reinicio continuo sin que se puedan levantar definitivamente varias interfaces
+def pipeline8():
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::coldStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"G0/0/1"',"ifType.1","i","117"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkDown", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"G0/0/1"',"IF-MIB::ifType.2","i","117"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::coldStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"S0/0/1"',"ifType.1","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkDown", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"S0/0/1"',"IF-MIB::ifType.2","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::coldStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"Fa0/0/1"',"ifType.1","i","62"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkDown", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"Fa0/0/2"',"IF-MIB::ifType.2","i","62"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::coldStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"FC-PH"',"ifType.1","i","56"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkDown", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"FC-PH"',"IF-MIB::ifType.2","i","56"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::coldStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"S0/0/2"',"ifType.1","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkDown", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"S0/0/2"',"IF-MIB::ifType.2","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::coldStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"Fa0/0/1"',"ifType.1","i","62"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkDown", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"Fa0/0/1"',"IF-MIB::ifType.2","i","62"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::coldStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"G0/0/1"',"ifType.1","i","117"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkDown", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"G0/0/1"',"IF-MIB::ifType.2","i","117"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::coldStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"S0/0/2"',"ifType.1","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkDown", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"S0/0/1"',"IF-MIB::ifType.2","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::coldStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"G0/0/1"',"ifType.1","i","117"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkDown", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"G0/0/1"',"IF-MIB::ifType.2","i","117"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::coldStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"S0/0/2"',"ifType.1","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkDown", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"S0/0/2"',"IF-MIB::ifType.2","i","144"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "SNMPv2-MIB::coldStart", "ifIndex.2", "i", "2",
+                     "ifDescr.1","s",'"Fa0/0/1"',"ifType.1","i","62"])
+    subprocess.call(["snmptrap", "-v", "2c", "-c", "public", "127.0.0.1" ,"''", "IF-MIB::linkDown", "IF-MIB::ifIndex.2", "i", "2",
+                    "IF-MIB::ifDescr.2","s",'"Fa0/0/1"',"IF-MIB::ifType.2","i","62"])
+    
 def main():
-    # pipeline4()
+    pipeline8()
     print("SALIDA")
 
 main()
